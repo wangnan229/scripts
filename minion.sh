@@ -38,7 +38,7 @@ echo "服务器IP地址：$ipaddr"
 if [ $v -eq 6 ];then
     echo "-------执行Centos6 salt安装-------"
 	yum clean all
-	wget -O /etc/yum.repos.d/salt.repo wget http://resource.haier.net/download/init/salt/salt6.repo
+	wget -O /etc/yum.repos.d/salt.repo http://resource.haier.net/download/init/salt/salt6.repo
 	wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
 	wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
 	yum makecache
@@ -58,7 +58,7 @@ fi
 if [ $v -eq 7 ];then
 	echo "-------执行Centos7 salt安装-------"
 	yum clean all
-	wget -O /etc/yum.repos.d/salt.repo wget http://resource.haier.net/download/init/salt/salt7.repo
+	wget -O /etc/yum.repos.d/salt.repo http://resource.haier.net/download/init/salt/salt7.repo
 	wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
 	wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 	yum makecache
