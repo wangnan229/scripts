@@ -35,7 +35,7 @@ else
 fi
 sleep 3
 
-#配置清华大学yum源
+#配置aliyun的yum源
 yum_config(){
     cd /etc/yum.repos.d/ && mkdir bak && mv -f *.repo bak/
     wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
