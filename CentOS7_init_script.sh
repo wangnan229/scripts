@@ -65,8 +65,8 @@ install_java(){
     tar xf /opt/jdk-8u191-linux-x64.tar.gz -C /opt/
     cat >> /etc/profile << EOF
 export JAVA_HOME=/opt/jdk1.8.0_191
-export PATH=$JAVA_HOME/bin:$PATH
-export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=\$JAVA_HOME/bin:\$PATH
+export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
     source /etc/profile
 }
