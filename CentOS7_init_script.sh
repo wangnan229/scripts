@@ -54,6 +54,11 @@ system_config(){
     timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
     yum -y install chrony && systemctl start chronyd.service && systemctl enable chronyd.service 
 }
+
+close_gui(){
+    systemctl set-default multi-user.target
+}
+
 ulimit_config(){
     echo "ulimit -SHn 102400" >> /etc/rc.local
     cat >> /etc/security/limits.conf << EOF
@@ -112,6 +117,7 @@ main(){
     system_config
     ulimit_config
     sysctl_config
+    close_gui
 }
 main
 
