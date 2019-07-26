@@ -73,10 +73,10 @@ EOF
 ulimit_config(){
     echo "ulimit -SHn 102400" >> /etc/rc.local
     cat >> /etc/security/limits.conf << EOF
-    *           soft   nofile       102400
-    *           hard   nofile       102400
-    *           soft   nproc        102400
-    *           hard   nproc        102400
+*           soft   nofile       102400
+*           hard   nofile       102400
+*           soft   nproc        102400
+*           hard   nproc        102400
 EOF
 
 }
