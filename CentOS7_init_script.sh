@@ -129,6 +129,7 @@ main(){
     ulimit_config
     sysctl_config
     close_gui
+    install_java
 }
 main
 
