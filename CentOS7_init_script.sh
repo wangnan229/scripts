@@ -64,10 +64,9 @@ install_java(){
     wget -O /opt/jdk-8u191-linux-x64.tar.gz http://39.106.253.153/ziyuan/file/jenkins/jdk-8u191-linux-x64.tar.gz 
     tar xf /opt/jdk-8u191-linux-x64.tar.gz -C /opt/
     cat >> /etc/profile << EOF
-    export JAVA_HOME=/opt/jdk1.8.0_191
-    export PATH=$JAVA_HOME/bin:$PATH
-    export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-
+export JAVA_HOME=/opt/jdk1.8.0_191
+export PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 EOF
 }
 
