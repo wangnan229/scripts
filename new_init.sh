@@ -458,3 +458,11 @@ main(){
     install_salt_minion
 }
 main
+
+cat << EOF
+ +--------------------------------------------------------------+  
+ |                === System init Finished ===                  |  
+ +--------------------------------------------------------------+  
+EOF
+sleep 3
+echo "Please reboot your system!"
