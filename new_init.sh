@@ -257,6 +257,11 @@ function user_add() {
 	echo "-------系统用户、目录初始化完成-------"
 }
 
+#关闭图形界面
+close_gui(){
+    systemctl set-default multi-user.target
+}
+
 function dns_config() {
 	#请根据各环境进行配置
     > /etc/resolv.conf
