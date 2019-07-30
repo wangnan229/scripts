@@ -33,19 +33,19 @@ JDK8_PATH='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
 #DNS设置
 #DNS1="10.159.32.205"
 #DNS2="10.159.32.203"
-DNS1="114.114.114.114"
-DNS2="8.8.8.8"
-DNS3="192.168.100.1"
-DNS4="192.168.100.2"
+DNS1='114.114.114.114'
+DNS2='8.8.8.8'
+DNS3='192.168.100.1'
+DNS4='192.168.100.2'
 
 #salt master地址
-SALT_MASTER="10.159.32.200"
+SALT_MASTER='10.159.32.200'
 
 #主机名
 HOSTNAME="node-01"
 
 #zabbix server
-ZBX_SERVER=10.159.32.90
+ZBX_SERVER='10.159.32.90'
 ##############从此处开始停止编辑###########
 
 #判断是否为root用，platform是否为X64
