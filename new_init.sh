@@ -3,6 +3,10 @@
 # curl https://yiyingcanfeng.github.io/centos-init.sh | bash
 # 可选参数base kernel python php nodejs cmd_game jdk mysql mongodb docker
 # 比如：curl https://yiyingcanfeng.github.io/centos-init.sh | bash -s base
+# Author: SuperC25
+# Mail: superchao25@gmail.com
+# Last Update: 2019.05.08
+#=================================================================
 
 #-------*****************-------
 #--1--此脚本需要root用户执行
@@ -11,6 +15,12 @@
 #--4--并且确认yum不要有什么后台进程在运行
 #-------*****************-------
 
+
+cat << EOF
+ +--------------------------------------------------------------+  
+ |              === Welcome to  System init ===                 |  
+ +--------------------------------------------------------------+  
+EOF
 
 echo -e "\033[31m 这个是Centos系统初始化脚本，请慎重运行！ press ctrl+C to cancel \033[0m"
 
