@@ -15,6 +15,11 @@
 echo -e "\033[31m 这个是Centos系统初始化脚本，请慎重运行！ press ctrl+C to cancel \033[0m"
 
 ##############从此处开始需要编辑###########
+
+#统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
+JDK7_PATH='https://resource.haier.net/download/init/java/jdk1.7.tar.gz'
+JDK8_PATH='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
+
 #DNS设置
 #DNS1="10.159.32.205"
 #DNS2="10.159.32.203"
@@ -264,12 +269,12 @@ function install_jdk_and_tomcat() {
 	#统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
     if [ ! -d "/apps/jdk1.7.0_60" ]; then
 		cd /apps
-		wget https://resource.haier.net/download/init/java/jdk1.7.tar.gz
-		wget https://resource.haier.net/download/init/java/jdk1.8.tar.gz
+		wget $JDK7_PATH
+		wget $JDK8_PATH
 		#wget https://resource.haier.net/download/java/tomcat8.5.tar.gz
 		#curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh | bash /dev/stdin 750"
 		#curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh | bash /dev/stdin 750"
-		tar zxvf /apps/jdk1.7.tar.gz /apps/
+		tar zxvf /apps/jdk1.7.tar.gz -C /apps/
 		chown -hR cloud-user:cloud-user /apps/jdk1.7
 		if [ ! -d "/apps/jdk1.7" ]; then
 			cat >> /etc/profile << EOF
