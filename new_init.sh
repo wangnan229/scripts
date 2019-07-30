@@ -23,6 +23,9 @@ DNS2="8.8.8.8"
 DNS3="192.168.100.1"
 DNS4="192.168.100.2"
 
+#salt master地址
+SALT_MASTER="10.159.32.200"
+
 #主机名
 HOSTNAME="node-01"
 
@@ -294,7 +297,7 @@ function install_salt_minion() {
 		sed -i 's/^id.*/#&/' /etc/salt/minion
 		sleep 5
 		cat >> /etc/salt/minion << EOF
-master: 10.159.32.200
+master: $SALT_MASTER
 id: $ipaddr
 EOF
 		chkconfig salt-minion on
@@ -310,7 +313,7 @@ EOF
 		sed -i 's/^id.*/#&/' /etc/salt/minion
 		sleep 5
 		cat >> /etc/salt/minion << EOF
-master: 10.159.32.200
+master: $SALT_MASTER
 id: $ipaddr
 EOF
 		systemctl enable salt-minion
@@ -430,11 +433,11 @@ function install_zabbix_agent() {
 
 
 main(){
-	hostname_config
+    hostname_config
     firewall_config
     config_mirror_and_update
     kernel_config
-	dns_config
+    dns_config
     user_add
     install_jdk_and_tomcat
     install_salt_minion
