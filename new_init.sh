@@ -124,11 +124,16 @@ function firewall_config() {
 	echo "-------防火墙初始化完成-------"
 }
 
-function config_mirror_and_update() {
+function yum_config() {
+    #cd /etc/yum.repos.d/ && mkdir bak && mv -f *.repo bak/
+    #wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+    #wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+    #yum clean all && yum makecache
+    #yum -y install iotop iftop net-tools lrzsz gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlib-devel  python-devel bash-completion
+    
     MIRROR="http://mirrors.aliyun.com"
     #更换yum源为阿里源
     cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
-    #curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
     sed -i "s/#baseurl/baseurl/g" /etc/yum.repos.d/CentOS-Base.repo
     sed -i "s/mirrorlist=http/#mirrorlist=http/g" /etc/yum.repos.d/CentOS-Base.repo
     sed -i "s@baseurl=.*/centos@baseurl=$MIRROR/centos@g" /etc/yum.repos.d/CentOS-Base.repo
@@ -137,7 +142,7 @@ function config_mirror_and_update() {
 
     #同步时间
 	timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
-    yum install -y ntpdate
+        yum install -y ntpdate
 	ntpdate ntp1.aliyun.com
 	hwclock -w
 
@@ -440,7 +445,7 @@ function install_zabbix_agent() {
 main(){
     hostname_config
     firewall_config
-    config_mirror_and_update
+    yum_config
     kernel_config
     dns_config
     user_add
