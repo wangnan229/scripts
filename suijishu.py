@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 # Author:zhenghanchao
+# python suijishu.py 12
 import random
 import string
 import sys
