@@ -183,8 +183,8 @@ function kernel_config() {
 	#文件句柄数优化
     cp /etc/security/limits.conf /etc/security/limits.conf.bak
 	cat >> /etc/security/limits.conf << EOF
- *           soft   nofile       65535
- *           hard   nofile       65535
+ *           soft   nofile       102400
+ *           hard   nofile       102400
 @cloud-user      hard    core            0
 @cloud-user      soft    core            0
 @cloud-user      hard    nproc           400000
@@ -274,8 +274,7 @@ close_gui(){
 
 function dns_config() {
 	#请根据各环境进行配置
-    > /etc/resolv.conf
-	cat >> /etc/resolv.conf <<EOF
+	cat > /etc/resolv.conf <<EOF
 nameserver $DNS1
 nameserver $DNS2
 nameserver $DNS3
