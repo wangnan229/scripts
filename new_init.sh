@@ -299,12 +299,13 @@ function install_jdk_and_tomcat() {
 	#统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
     if [ ! -d "/apps/jdk1.7.0_60" ]; then
 		cd /apps
-		wget $JDK7_PATH
-		wget $JDK8_PATH
+		wget -O /apps/jdk1.7.tar.gz $JDK7_PATH
+		wget -O /apps/jdk1.8.tar.gz $JDK8_PATH
 		#wget https://resource.haier.net/download/java/tomcat8.5.tar.gz
 		#curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh | bash /dev/stdin 750"
 		#curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh | bash /dev/stdin 750"
 		tar zxvf /apps/jdk1.7.tar.gz -C /apps/
+		tar zxvf /apps/jdk1.8.tar.gz -C /apps/
 		chown -hR cloud-user:cloud-user /apps/jdk1.7
 		if [ ! -d "/apps/jdk1.7" ]; then
 			cat >> /etc/profile << EOF
@@ -314,7 +315,7 @@ export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 EOF
 		fi
 		source /etc/profile
-		rm -f /apps/jdk1.7.tar.gz jdk1.8.tar.gz
+		rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
 	fi
 	
 	echo "-------JDK、TOMCAT初始化完成-------"
