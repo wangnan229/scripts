@@ -310,8 +310,8 @@ function install_jdk_and_tomcat() {
     chown -hR cloud-user:cloud-user /apps/jdk1.8
 			cat >> /etc/profile << EOF
 export JAVA_HOME=/apps/jdk1.7
-export PATH=$JAVA_HOME/bin:\$PATH
-export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=\$JAVA_HOME/bin:\$PATH
+export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
 
     source /etc/profile
