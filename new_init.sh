@@ -63,6 +63,16 @@ fi
 
 sleep 3
 
+#判断是否存在/apps和/export/apps目录，没有的话退出
+if [[ -d /apps && -d /export/apps ]]
+then
+	echo "OK /apps and /export/apps is fine"
+else
+	echo 'Sorry. you do not have a /apps and /export/apps directory'
+	exit 1
+fi
+
+
 v=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
  
 if [ $v -eq 6 ]; then
