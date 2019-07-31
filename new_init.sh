@@ -179,7 +179,7 @@ function yum_config() {
     yum makecache
     #yum update -y
 	#初始化安装服务
-	yum install -y vim telnet unzip tcpdump sysstat gcc gdb wget iotop iftop ntpd traceroute tomcat-native cronolog lrzsz apr lsof
+	yum install -y vim telnet unzip tcpdump sysstat gcc gdb wget iotop iftop traceroute tomcat-native cronolog lrzsz apr lsof nmap
 	
 	#增加普通用户的软件执行权限
 	chmod u+s /usr/sbin/tcpdump
