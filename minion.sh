@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#---master ip---
+MASTER_ADDR='10.159.32.200'
+
+
 rpm -qa | grep salt-minion-2019
 if [ $? -eq 0 ]
 then
@@ -47,7 +51,7 @@ if [ $v -eq 6 ];then
 	sed -i 's/^id.*/#&/' /etc/salt/minion
 	rm -f  /etc/salt/pki/minion/*
 	cat >> /etc/salt/minion << EOF
-master: 10.159.32.200
+master: $MASTER_ADDR
 id: $ipaddr
 EOF
 	chkconfig salt-minion on
@@ -68,7 +72,7 @@ if [ $v -eq 7 ];then
     sed -i 's/^id.*/#&/' /etc/salt/minion
     rm -f  /etc/salt/pki/minion/*
     cat >> /etc/salt/minion << EOF
-master: 10.159.32.200
+master: $MASTER_ADDR
 id: $ipaddr
 EOF
 	systemctl enable salt-minion
