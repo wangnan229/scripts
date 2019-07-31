@@ -313,12 +313,10 @@ export JAVA_HOME=/apps/jdk1.7
 export PATH=$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 EOF
-		fi
-		source /etc/profile
-		rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
-	fi
-	
-	echo "-------JDK、TOMCAT初始化完成-------"
+
+    source /etc/profile
+    rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
+    echo "-------JDK、TOMCAT初始化完成-------"
 }
 
 #安装salt-minion 2019-02最新版本
