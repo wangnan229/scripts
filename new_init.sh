@@ -465,6 +465,16 @@ function install_zabbix_agent() {
 	echo "-------Zabbix agent初始化完成-------"
 }
 
+#所有的配置
+#    hostname_config
+#    firewall_config
+#    yum_config
+#    kernel_config
+#    dns_config
+#    user_add
+#    close_gui
+#    install_jdk_and_tomcat
+#    install_salt_minion
 
 main(){
     hostname_config
@@ -473,6 +483,7 @@ main(){
     kernel_config
     dns_config
     user_add
+    close_gui
     install_jdk_and_tomcat
     install_salt_minion
 }
