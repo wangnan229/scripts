@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#bash gencert.sh www.example.com
+
 # create self-signed server certificate:
 
 read -p "Enter your domain [www.example.com]: " DOMAIN
