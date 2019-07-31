@@ -295,6 +295,7 @@ EOF
 
 #安装jdk和tomcat
 function install_jdk_and_tomcat() {
+    rpm -qa | grep openjdk | xargs yum remove -y
 	#统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
     if [ ! -d "/apps/jdk1.7.0_60" ]; then
 		cd /apps
