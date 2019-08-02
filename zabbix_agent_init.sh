@@ -55,13 +55,19 @@ install_agent () {
 # config zabbix-agent
 config_agent () {
     mv /etc/zabbix/zabbix_agentd.conf{,.ori.$(date +%F)}
-    wget --directory-prefix=/etc/zabbix $ZCONF &>/dev/nulll && echo "----zabbix_agentd.conf download successed.----" || echo "----zabbix_agentd.conf download failed.----"
-    sed -i "s/^Server=.*$/Server=$ZBX_SERVER/" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s/^ServerActive=.*$/ServerActive=$ZBX_SERVER/" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s/^Hostname=.*$/Hostname=$LOCALIP/" /etc/zabbix/zabbix_agentd.conf
+cat > /etc/zabbix/zabbix_agentd.conf <<EOF
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=1024
+Server=$ZBX_SERVER
+ServerActive=$ZBX_SERVER
+Hostname=$LOCALIP
+Timeout=10
+Include=/etc/zabbix/zabbix_agentd.d/*.conf 
+UnsafeUserParameters=1
+EOF
     echo "----zabbix_agentd.conf update successed.-----"
 }
-
 
 # config zabbix-agent tcp status
 config_tcp_status () {
