@@ -106,7 +106,9 @@ start_agent () {
 # zabbix-agent crontab
 config_crontab () {
     if [ ! -f /etc/zabbix/bin/zabbix-crontab.sh ];then
-            wget --directory-prefix=/etc/zabbix/bin $ZCRON &>/dev/null && echo "----zabbix-crontab.sh download successed.----" || echo "----zabbix-crontab.sh download failed.----"
+            echo '#!/bin/bash' >> /etc/zabbix/bin/zabbix-crontab.sh
+            echo '#########TCP connection status ###########' >> /etc/zabbix/bin/zabbix-crontab.sh
+            echo "/usr/bin/netstat -an|awk '/^tcp/{++S[\$NF]}END{for(a in S) print a,S[a]}' >/tmp/TCP_connection.stat" >> /etc/zabbix/bin/zabbix-crontab.sh
             chmod +x /etc/zabbix/bin/zabbix-crontab.sh
             chown -R zabbix:zabbix /etc/zabbix
         fi
