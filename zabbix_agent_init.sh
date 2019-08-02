@@ -10,7 +10,7 @@ ZABBIX_AGENT_VERSION='3.4.11'
 LOCALIP=$(ip a |grep -E "team0$|bond0$|eth0$|ens160$" |grep "inet" |awk '{print $2}' |awk -v FS="/" '{print $1}')
 OS_VERSION=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
 
-配置repo源
+#配置repo源
 config_repo (){
     wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX-A14FE591 https://mirrors.aliyun.com/zabbix/RPM-GPG-KEY-ZABBIX-A14FE591
 
@@ -124,8 +124,9 @@ config_crontab () {
 
 
 #main
-echo "----Start.----"        
+echo "----Start.----"
 
+config_repo
 remove_agent
 install_agent
 config_agent
