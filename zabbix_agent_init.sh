@@ -126,7 +126,6 @@ config_crontab () {
 #main
 echo "----Start.----"        
 
-install_apps
 remove_agent
 install_agent
 config_agent
