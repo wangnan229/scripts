@@ -4,6 +4,7 @@
 ZABBIX_REPO_VERSION='3.4'
 #zabbix server
 ZBX_SERVER='10.159.59.3'
+ZABBIX_AGENT_VERSION='3.4.11'
 #编辑结束
 
 LOCALIP=$(ip a |grep -E "team0$|bond0$|eth0$|ens160$" |grep "inet" |awk '{print $2}' |awk -v FS="/" '{print $1}')
@@ -57,41 +58,7 @@ remove_agent () {
 install_agent () {
     rpm -q zabbix-agent &>/dev/null && ZBXA=1 || ZBXA=0
     if [ $ZBXA == 0 ];then
-        if [ $OS == 3 ]  ;then
-            OSVER=7
-            echo "----OSVER: $OSVER----"
-            FTPPATH=$FTPROOT/3.4.11/$OSVER
-            ZAGT="zabbix-agent-3.4.11-1.el7.x86_64.rpm"
-            ZSDR="zabbix-sender-3.4.11-1.el7.x86_64.rpm"
-            
-            # install zabbix-agent
-            wget --directory-prefix=$LOCALPATH $FTPPATH/$ZAGT &>/dev/null && echo "----zabbix-agent download successed.----" || echo "----zabbix-agent download failed.----"
-            wget --directory-prefix=$LOCALPATH $FTPPATH/$ZSDR &>/dev/null && echo "----zabbix-sender download successed.----" ||echo "----zabbix-sender download failed.----"
-            yum -y install $LOCALPATH/$ZAGT $LOCALPATH/$ZSDR &>/dev/null && echo "----zabbix-agent zabbix-sender install seccessed.----"
-    
-            # remove rpm file
-            rm -f $LOCALPATH/zabbix-agent*.rpm $LOCALPATH/zabbix-sender*.rpm
-            
-        elif [ $OS == 2 ];then
-            OSVER=6
-            echo "----OSVER: $OSVER----"
-            FTPPATH=$FTPROOT/3.4.11/$OSVER
-            ZAGT="zabbix-agent-3.4.11-1.el6.x86_64.rpm"
-            ZSDR="zabbix-sender-3.4.11-1.el6.x86_64.rpm"
-            
-            # install zabbix-agent
-            wget --directory-prefix=$LOCALPATH $FTPPATH/$ZAGT &>/dev/null && echo "----zabbix-agent download successed.----" || echo "----zabbix-agent download failed.----"
-            wget --directory-prefix=$LOCALPATH $FTPPATH/$ZSDR &>/dev/null && echo "----zabbix-sender download successed.----" ||echo "----zabbix-sender download failed.----"
-            yum -y install $LOCALPATH/$ZAGT $LOCALPATH/$ZSDR &>/dev/null && echo "----zabbix-agent zabbix-sender install seccessed.----"
-    
-            # remove rpm file
-            rm -f $LOCALPATH/zabbix-agent*.rpm $LOCALPATH/zabbix-sender*.rpm
-            
-            
-        else
-            echo "----OS not support! Exiting...----"
-        fi
-    
+        yum install zabbix-agent-$ZABBIX_AGENT_VERSION
     else
         echo -e "----$(rpm -q zabbix-agent) already installed.----"
     fi
@@ -107,7 +74,6 @@ config_agent () {
     sed -i "s/^Hostname=.*$/Hostname=$LOCALIP/" /etc/zabbix/zabbix_agentd.conf
     echo "----zabbix_agentd.conf update successed.-----"
 }
-
 
 
 # config zabbix-agent tcp status
@@ -131,11 +97,11 @@ chmod_dir () {
 
 # start zabbix-agent
 start_agent () {
-    if [ $OS == 3 ];then
+    if [ $OS_VERSION == 7 ];then
         # start zabbix-agent
         systemctl restart zabbix-agent &>/dev/null && echo "----zabbix-agent start successed.----" ||echo "----zabbix-agent start failed.----"
         systemctl enable zabbix-agent &>/dev/null
-    elif [ $OS == 2 ];then
+    elif [ $OS_VERSION == 6 ];then
         # start zabbix-agent
         service zabbix-agent restart &>/dev/null && echo "----zabbix-agent start successed.----" ||echo "----zabbix-agent start failed.----"
         chkconfig zabbix-agent on &>/dev/null
