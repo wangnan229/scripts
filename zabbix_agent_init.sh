@@ -71,8 +71,8 @@ EOF
 
 # config zabbix-agent tcp status
 config_tcp_status () {
-    if [ ! -f $TCPCONF ];then
-        wget --directory-prefix=/etc/zabbix/zabbix_agentd.d $TCPCONF &>/dev/nulll && echo "----userparameter_tcp.conf download successed.----" || echo "----userparameter_tcp.conf download failed.----"
+    if [ ! -f /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf ];then
+        echo 'UserParameter=tcp.status[*],grep $1 /tmp/TCP_connection.stat >>/dev/null && grep $1 /tmp/TCP_connection.stat |awk '{print $$2}' || echo 0' > /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf
     fi
 }
 
