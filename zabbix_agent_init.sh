@@ -72,7 +72,7 @@ EOF
 # config zabbix-agent tcp status
 config_tcp_status () {
     if [ ! -f /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf ];then
-        echo 'UserParameter=tcp.status[*],grep $1 /tmp/TCP_connection.stat >>/dev/null && grep $1 /tmp/TCP_connection.stat |awk '{print $$2}' || echo 0' > /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf
+        echo 'UserParameter=tcp.status[*],grep $1 /tmp/TCP_connection.stat >>/dev/null && grep $1 /tmp/TCP_connection.stat |awk '{print $2}' || echo 0' > /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf
     fi
 }
 
