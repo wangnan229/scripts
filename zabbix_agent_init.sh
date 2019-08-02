@@ -72,7 +72,9 @@ EOF
 # config zabbix-agent tcp status
 config_tcp_status () {
     if [ ! -f /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf ];then
-        echo 'UserParameter=tcp.status[*],grep $1 /tmp/TCP_connection.stat >>/dev/null && grep $1 /tmp/TCP_connection.stat |awk '{print $2}' || echo 0' > /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf
+        cat > /etc/zabbix/zabbix_agentd.d/userparameter_tcp.conf  <<EOF
+UserParameter=tcp.status[*],grep \$1 /tmp/TCP_connection.stat >>/dev/null && grep \$1 /tmp/TCP_connection.stat |awk '{print \$2}' || echo 0
+EOF
     fi
 }
 
@@ -106,9 +108,11 @@ start_agent () {
 # zabbix-agent crontab
 config_crontab () {
     if [ ! -f /etc/zabbix/bin/zabbix-crontab.sh ];then
-            echo '#!/bin/bash' >> /etc/zabbix/bin/zabbix-crontab.sh
-            echo '#########TCP connection status ###########' >> /etc/zabbix/bin/zabbix-crontab.sh
-            echo "/usr/bin/netstat -an|awk '/^tcp/{++S[\$NF]}END{for(a in S) print a,S[a]}' >/tmp/TCP_connection.stat" >> /etc/zabbix/bin/zabbix-crontab.sh
+            cat > /etc/zabbix/bin/zabbix-crontab.sh << EOF
+ #!/bin/bash           
+ #########TCP connection status ###########
+ /usr/bin/netstat -an|awk '/^tcp/{++S[\$NF]}END{for(a in S) print a,S[a]}' >/tmp/TCP_connection.stat
+ EOF
             chmod +x /etc/zabbix/bin/zabbix-crontab.sh
             chown -R zabbix:zabbix /etc/zabbix
         fi
