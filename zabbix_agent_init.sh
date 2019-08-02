@@ -10,9 +10,11 @@ ZABBIX_AGENT_VERSION='3.4.11'
 LOCALIP=$(ip a |grep -E "team0$|bond0$|eth0$|ens160$" |grep "inet" |awk '{print $2}' |awk -v FS="/" '{print $1}')
 OS_VERSION=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
 
-wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX-A14FE591 https://mirrors.aliyun.com/zabbix/RPM-GPG-KEY-ZABBIX-A14FE591
+配置repo源
+config_repo (){
+    wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX-A14FE591 https://mirrors.aliyun.com/zabbix/RPM-GPG-KEY-ZABBIX-A14FE591
 
-cat > /etc/yum.repos.d/zabbix.repo <<EOF
+    cat > /etc/yum.repos.d/zabbix.repo <<EOF
 [zabbix]
 name=Zabbix Official Repository - \$basearch
 baseurl=https://mirrors.aliyun.com/zabbix/zabbix/xxx/rhel/---/\$basearch/
@@ -21,24 +23,9 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-ZABBIX-A14FE591
 EOF
 
-sed -i "s/xxx/$ZABBIX_REPO_VERSION/g" /etc/yum.repos.d/zabbix.repo
-sed -i "s/---/$OS_VERSION/g" /etc/yum.repos.d/zabbix.repo
-
-
-
-# install essential software
-install_apps () {
-    rpm -q wget &>/dev/null && WG=1 ||WG=0
-    if [ $WG == 0 ];then
-        yum -y install wget &>/dev/null
-    fi
-    
-    rpm -q net-tools &>/dev/null
-    if [ $? != 0 ];then
-        yum -y install net-tools &>/dev/null
-    fi
+    sed -i "s/xxx/$ZABBIX_REPO_VERSION/g" /etc/yum.repos.d/zabbix.repo
+    sed -i "s/---/$OS_VERSION/g" /etc/yum.repos.d/zabbix.repo
 }
-
 
 # remove zabbix-agent
 remove_agent () {
