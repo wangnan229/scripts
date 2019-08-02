@@ -45,7 +45,7 @@ remove_agent () {
 install_agent () {
     rpm -q zabbix-agent &>/dev/null && ZBXA=1 || ZBXA=0
     if [ $ZBXA == 0 ];then
-        yum install zabbix-agent-$ZABBIX_AGENT_VERSION
+        yum install zabbix-agent-$ZABBIX_AGENT_VERSION -y
     else
         echo -e "----$(rpm -q zabbix-agent) already installed.----"
     fi
