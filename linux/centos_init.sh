@@ -304,10 +304,10 @@ function install_jdk_and_tomcat() {
     #curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh | bash /dev/stdin 750"
     tar -xf /apps/jdk1.7.tar.gz -C /apps/
     tar -xf /apps/jdk1.8.tar.gz -C /apps/
-    chown -hR cloud-user:cloud-user /apps/jdk1.7
+    chown -hR cloud-user:cloud-user /apps/jdk1.7.0_60
     chown -hR cloud-user:cloud-user /apps/jdk1.8
 			cat >> /etc/profile << EOF
-export JAVA_HOME=/apps/jdk1.7
+export JAVA_HOME=/apps/jdk1.7.0_60
 export PATH=\$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
