@@ -29,10 +29,10 @@ JDK7_PATH='https://resource.haier.net/download/init/java/jdk1.7.tar.gz'
 JDK8_PATH='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
 
 #DNS设置
-#DNS1="10.159.32.205"
-#DNS2="10.159.32.203"
-DNS1='114.114.114.114'
-DNS2='8.8.8.8'
+DNS1="10.159.32.205"
+DNS2="10.159.32.203"
+#DNS1='114.114.114.114'
+#DNS2='8.8.8.8'
 DNS3='192.168.100.1'
 DNS4='192.168.100.2'
 
@@ -42,8 +42,6 @@ SALT_MASTER='10.159.32.200'
 #主机名
 HOSTNAME="node-01"
 
-#zabbix server
-ZBX_SERVER='10.159.32.90'
 ##############从此处开始停止编辑###########
 
 #判断是否为root用，platform是否为X64
@@ -132,12 +130,14 @@ function firewall_config() {
 
 	if [ $v -eq 7 ];then
 		echo "-------修改Centos 7 防火墙策略-------"
-		systemctl restart firewalld.service
-		systemctl enable firewalld.service
+		#systemctl restart firewalld.service
+		#systemctl enable firewalld.service
 		#调整默认策略（默认拒绝所有访问，改成允许所有访问）：
-		firewall-cmd --permanent --zone=public --set-target=ACCEPT
-		firewall-cmd --reload
-		systemctl restart sshd
+		#firewall-cmd --permanent --zone=public --set-target=ACCEPT
+		#firewall-cmd --reload
+		#systemctl restart sshd
+		systemctl stop firewalld
+		systemctl disable firewalld
 	fi
 	echo "-------防火墙初始化完成-------"
 }
@@ -191,8 +191,8 @@ function kernel_config() {
 	#文件句柄数优化
     cp /etc/security/limits.conf /etc/security/limits.conf.bak
 	cat >> /etc/security/limits.conf << EOF
- *           soft   nofile       102400
- *           hard   nofile       102400
+*           soft   nofile       102400
+*           hard   nofile       102400
 @cloud-user      hard    core            0
 @cloud-user      soft    core            0
 @cloud-user      hard    nproc           400000
@@ -207,8 +207,8 @@ EOF
  # accidental fork bombs.
  # See rhbz #432903 for reasoning.
  
- *          soft    nproc     102400
- root       soft    nproc     unlimited
+*          soft    nproc     102400
+root       soft    nproc     unlimited
 EOF
 
 	#内核参数优化
@@ -307,7 +307,7 @@ function install_jdk_and_tomcat() {
     chown -hR cloud-user:cloud-user /apps/jdk1.7
     chown -hR cloud-user:cloud-user /apps/jdk1.8
 			cat >> /etc/profile << EOF
-export JAVA_HOME=/apps/jdk1.8
+export JAVA_HOME=/apps/jdk1.7
 export PATH=\$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
@@ -354,115 +354,6 @@ EOF
 	echo "-------Saltstack Minion初始化完成-------"
 }
 
-#安装zabbix agent
-function install_zabbix_agent() {
-	#安装zabbix-agent初始化,不同环境使用注意配置DNS zabbix.haier.net服务端映射
-	
-	#zabbix-agent
-	FTPROOT=ftp://$FTP/upload/software/zabbix
-	ZCONF="https://resource.haier.net/download/init/zabbix/zabbix_agentd.conf"
-	ZCRON="https://resource.haier.net/download/init/zabbix/crontab/zabbix-crontab.sh"
-	TCPCONF="https://resource.haier.net/download/init/zabbix/zabbix_agentd.d/userparameter_tcp.conf"
-	
-	# install zabbix-agent
-	rpm -q zabbix-agent &>/dev/null && ZBXA=1 || ZBXA=0
-	if [ $ZBXA == 0 ];then
-			if [ $OS == 3 ]  ;then
-					OSVER=7
-					echo "----OSVER: $OSVER----"
-					FTPPATH=$FTPROOT/3.4.11/$OSVER
-					ZAGT="zabbix-agent-3.4.11-1.el7.x86_64.rpm"
-					ZSDR="zabbix-sender-3.4.11-1.el7.x86_64.rpm"
-
-					# install zabbix-agent
-					wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=$LOCALPATH $FTPPATH/$ZAGT &>/dev/null && echo "----zabbix-agent download successed.----" || echo "----zabbix-agent download failed.----"
-					wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=$LOCALPATH $FTPPATH/$ZSDR &>/dev/null && echo "----zabbix-sender download successed.----" ||echo "----zabbix-sender download failed.----"
-					yum -y install $LOCALPATH/$ZAGT $LOCALPATH/$ZSDR &>/dev/null && echo "----zabbix-agent zabbix-sender install seccessed.----"
-
-					# remove rpm file
-					rm -f $LOCALPATH/zabbix-agent*.rpm $LOCALPATH/zabbix-sender*.rpm
-
-			elif [ $OS == 2 ];then
-					OSVER=6
-					echo "----OSVER: $OSVER----"
-					FTPPATH=$FTPROOT/3.4.11/$OSVER
-					ZAGT="zabbix-agent-3.4.11-1.el6.x86_64.rpm"
-					ZSDR="zabbix-sender-3.4.11-1.el6.x86_64.rpm"
-
-					# install zabbix-agent
-					wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=$LOCALPATH $FTPPATH/$ZAGT &>/dev/null && echo "----zabbix-agent download successed.----" || echo "----zabbix-agent download failed.----"
-					wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=$LOCALPATH $FTPPATH/$ZSDR &>/dev/null && echo "----zabbix-sender download successed.----" ||echo "----zabbix-sender download failed.----"
-					yum -y install $LOCALPATH/$ZAGT $LOCALPATH/$ZSDR &>/dev/null && echo "----zabbix-agent zabbix-sender install seccessed.----"
-
-					# remove rpm file
-					rm -f $LOCALPATH/zabbix-agent*.rpm $LOCALPATH/zabbix-sender*.rpm
-
-
-			else 
-					echo "----OS not support! Exiting...----"
-			fi
-
-	else
-			echo -e "----$(rpm -q zabbix-agent) already installed.----"
-	fi
-
-
-	# config zabbix-agent
-	mv /etc/zabbix/zabbix_agentd.conf{,.ori.$(date +%F)}
-	wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=/etc/zabbix $ZCONF &>/dev/nulll && echo "----zabbix_agentd.conf download successed.----" || echo "----zabbix_agentd.conf download failed.----"
-	sed -i "s/^Server=.*$/Server=$ZBX_SERVER/" /etc/zabbix/zabbix_agentd.conf
-	sed -i "s/^ServerActive=.*$/ServerActive=$ZBX_SERVER/" /etc/zabbix/zabbix_agentd.conf
-	sed -i "s/^Hostname=.*$/Hostname=$LOCALIP/" /etc/zabbix/zabbix_agentd.conf
-	echo "----zabbix_agentd.conf update successed.-----"
-
-
-	# config zabbix-agent tcp status
-	if [ ! -f $TCPCONF ];then
-			wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=/etc/zabbix/zabbix_agentd.d $TCPCONF &>/dev/nulll && echo "----userparameter_tcp.conf download successed.----" || echo "----userparameter_tcp.conf download failed.----"
-	fi
-
-	# chmod
-	chown -R zabbix:zabbix /etc/zabbix
-
-
-
-	# start zabbix-agent
-	if [ $OS == 3 ];then
-			# start zabbix-agent
-			systemctl restart zabbix-agent &>/dev/null && echo "----zabbix-agent start successed.----" ||echo "----zabbix-agent start failed.----"
-			systemctl enable zabbix-agent &>/dev/null
-	elif [ $OS == 2 ];then
-			# start zabbix-agent
-			service zabbix-agent restart &>/dev/null && echo "----zabbix-agent start successed.----" ||echo "----zabbix-agent start failed.----"
-			chkconfig zabbix-agent on &>/dev/null
-	else
-			echo "----OS not support! Exiting...----"
-	fi
-
-
-	# mkdir bin
-	if [ ! -d /etc/zabbix/bin ];then
-			mkdir /etc/zabbix/bin
-	fi
-
-	# zabbix-agent crontab	
-	if [ ! -f /etc/zabbix/bin/zabbix-crontab.sh ];then
-			wget --ftp-user=$FTPUSER --ftp-password=$FTPPASSWD --directory-prefix=/etc/zabbix/bin $ZCRON &>/dev/null && echo "----zabbix-crontab.sh download successed.----" || echo "----zabbix-crontab.sh download failed.----" 
-			chmod +x /etc/zabbix/bin/zabbix-crontab.sh
-			chown -R zabbix:zabbix /etc/zabbix
-	fi
-
-	grep "/etc/zabbix/bin/zabbix-crontab.sh" /var/spool/cron/root &>/dev/null && ZC=1 || ZC=0
-	if [ $ZC == 0 ];then
-			echo '* * * * * /etc/zabbix/bin/zabbix-crontab.sh' >>/var/spool/cron/root
-			echo "----zabbix-agent crontab config successed.----"
-	else
-			echo "----zabbix-agent crontab already exist.----"
-	fi
-
-	echo "-------Zabbix agent初始化完成-------"
-}
-
 #所有的配置
 #    hostname_config
 #    firewall_config
@@ -475,13 +366,11 @@ function install_zabbix_agent() {
 #    install_salt_minion
 
 main(){
-    hostname_config
     firewall_config
     yum_config
     kernel_config
     dns_config
     user_add
-    close_gui
     install_jdk_and_tomcat
     install_salt_minion
 }
