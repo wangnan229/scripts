@@ -10,7 +10,7 @@
 #--2--需要有/apps 和 /export 目录
 #--3--而且/apps jdk放在此目录中
 #--4--并且确认yum不要有什么后台进程在运行
-#--5--ifconfig可以使用，
+#--5--ifconfig和wget命令可以使用
 #-------*****************-------
 
 
@@ -25,7 +25,7 @@ echo -e "\033[31m 这个是Centos系统初始化脚本，请慎重运行！ pres
 ##############从此处开始需要编辑###########
 
 #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
-JDK7_PATH='https://resource.haier.net/download/init/java/jdk1.7.tar.gz'
+JDK7_PATH='http://39.106.253.153/ziyuan/file/jenkins/jdk1.7.tar.gz'
 JDK8_PATH='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
 
 #DNS设置
