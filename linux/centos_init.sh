@@ -7,8 +7,8 @@
 
 #-------*****************-------
 #--1--此脚本需要root用户执行
-#--2--需要有/apps 和 /export/apps 目录
-#--3--而且 ln -s /export/apps /apps jdk放在此目录中
+#--2--需要有/apps 和 /export 目录
+#--3--而且/apps jdk放在此目录中
 #--4--并且确认yum不要有什么后台进程在运行
 #--5--ifconfig可以使用，
 #-------*****************-------
@@ -60,14 +60,13 @@ fi
 sleep 3
 
 #判断是否存在/apps和/export/apps目录，没有的话退出
-if [[ -d /apps && -d /export/apps ]]
+if [[ -d /apps && -d /export ]]
 then
-	echo "OK /apps and /export/apps is fine"
+	echo "OK /apps and /export is fine"
 else
-	echo 'Sorry. you do not have a /apps and /export/apps directory'
+	echo 'Sorry. you do not have a /apps and /export directory'
 	exit 1
 fi
-
 
 v=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
  
@@ -354,6 +353,14 @@ EOF
 	echo "-------Saltstack Minion初始化完成-------"
 }
 
+#关闭图形界面
+function dirblong(){
+    chown cloud-user.cloud-user /apps
+    chown cloud-user.cloud-user /export
+    chmod 777 /apps
+    chmod 777 /export
+}
+
 #所有的配置
 #    hostname_config
 #    firewall_config
@@ -373,6 +380,7 @@ main(){
     user_add
     install_jdk_and_tomcat
     install_salt_minion
+    dirblong
 }
 main
 
