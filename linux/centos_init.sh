@@ -241,7 +241,7 @@ EOF
 
 function user_add() {
 	#创建haieradmin，并允许其用sudo命令时不需要输入密码
-    NEWUSER="haieradmin"
+        NEWUSER="uplus"
 	PASS="rOXFJZhiaACE"
 	id $NEWUSER
 	if [ $? -eq 0 ] ; then
@@ -374,6 +374,7 @@ function dirblong(){
 #    install_salt_minion
 
 main(){
+    user_add
     firewall_config
     yum_config
     kernel_config
