@@ -378,7 +378,6 @@ main(){
     firewall_config
     yum_config
     kernel_config
-    user_add
     install_jdk_and_tomcat
     install_salt_minion
     dirblong
