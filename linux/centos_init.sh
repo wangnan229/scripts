@@ -251,7 +251,7 @@ function user_add() {
 		echo $PASS | passwd --stdin $NEWUSER
 		if [ $? -eq 0 ] ; then
 			echo "$NEWUSER账户创建成功！"
-			sed -i "/^root/a\$NEWUSER\tALL=(ALL)\tNOPASSWD: ALL" /etc/sudoers
+			sed -i "/^root/a$NEWUSER\tALL=(ALL)\tNOPASSWD: ALL" /etc/sudoers
 		else
 			echo "$NEWUSER账户创建失败！"
 		fi
