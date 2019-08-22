@@ -45,42 +45,32 @@ HOSTNAME="node-01"
 
 ##############从此处开始停止编辑###########
 
-#判断是否为root用，platform是否为X64
+#判断是否为root用户执行
 if  [ $(id -u) -gt 0 ]; then
     echo "please use root run the script!"
     exit 1
 fi
+
+#判断是否是centos7.* 64位版本，不是的话退出
 platform=`uname -i`
 osversion=`cat /etc/redhat-release | awk '{print $1}'`
-if [[ $platform != "x86_64" ||  $osversion != "CentOS" ]];then
-    echo "Error this script is only for 64bit and CentOS Operating System !"
+vseven=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
+if [[ $platform != "x86_64" ||  $osversion != "CentOS" || $vseven != 7 ]];then
+    echo "Error this script is only for 64bit and CentOS7 Operating System !"
     exit 1
 fi
     echo "The platform is ok"
 
-sleep 3
+#休息一下
+sleep 1
 
-#判断是否存在/apps和/export/apps目录，没有的话退出
+#判断是否存在/apps和/export目录，没有的话退出
 if [[ -d /apps && -d /export ]]
 then
 	echo "OK /apps and /export is fine"
 else
 	echo 'Sorry. you do not have a /apps and /export directory'
 	exit 1
-fi
-
-v=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
- 
-if [ $v -eq 6 ]; then
- 
-    echo "系统版本：Centos 6"
- 
-fi
- 
-if [ $v -eq 7 ]; then
- 
-    echo "系统版本：Centos 7"
- 
 fi
 
 #获取本机ip地址
@@ -94,6 +84,9 @@ ipaddr=`ifconfig |grep team0 -A 1|grep inet|awk '{print $2}'`
 	ipaddr=`/sbin/ifconfig | grep 'inet ' | awk '{print $2}' | sed -e '/127\.0\.0\.1/d' | head -n 1`
   fi
 echo "服务器IP地址：$ipaddr"
+
+#休息一下
+sleep 1
 
 #
 function hostname_config() {
