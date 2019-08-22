@@ -39,15 +39,19 @@ DNS4='192.168.100.2'
 
 #salt master地址
 SALT_MASTER='10.159.32.200'
-
+SALT_MINION_VERSION='2019.2.0'
 #主机名
 HOSTNAME="node-01"
+
+#yum源地址
+MIRROR="http://mirrors.aliyun.com"
+
 
 ##############从此处开始停止编辑###########
 
 #判断是否为root用户执行
 if  [ $(id -u) -gt 0 ]; then
-    echo "please use root run the script!"
+    echo -e "\033[31m please use root run the script! \033[0m"
     exit 1
 fi
 
@@ -56,10 +60,10 @@ platform=`uname -i`
 osversion=`cat /etc/redhat-release | awk '{print $1}'`
 vseven=`cat /etc/redhat-release|sed -r 's/.* ([0-9]+)\..*/\1/'`
 if [[ $platform != "x86_64" ||  $osversion != "CentOS" || $vseven != 7 ]];then
-    echo "Error this script is only for 64bit and CentOS7 Operating System !"
+    echo -e "\033[31m Error this script is only for 64bit and CentOS7 Operating System ! \033[0m"
     exit 1
 fi
-    echo "The platform is ok"
+    echo -e "\033[32m The platform is ok ! \033[0m"
 
 #休息一下
 sleep 1
@@ -67,9 +71,9 @@ sleep 1
 #判断是否存在/apps和/export目录，没有的话退出
 if [[ -d /apps && -d /export ]]
 then
-	echo "OK /apps and /export is fine"
+	echo -e "\033[32m OK /apps and /export is fine \033[0m"
 else
-	echo 'Sorry. you do not have a /apps and /export directory'
+	echo -e '\033[31m Sorry. you do not have a /apps and /export directory \033[0m'
 	exit 1
 fi
 
@@ -83,7 +87,7 @@ ipaddr=`ifconfig |grep team0 -A 1|grep inet|awk '{print $2}'`
   then
 	ipaddr=`/sbin/ifconfig | grep 'inet ' | awk '{print $2}' | sed -e '/127\.0\.0\.1/d' | head -n 1`
   fi
-echo "服务器IP地址：$ipaddr"
+echo -e "\033[32m 服务器IP地址：$ipaddr \033[0m"
 
 #休息一下
 sleep 1
@@ -92,7 +96,7 @@ sleep 1
 function hostname_config() {
 	#hostnamectl set-hostname aaa
 	if [ "$HOSTNAME" == "" ];then
-		echo "The host name is empty."
+		echo -e "\033[31m The host name is empty!!! \033[0m"
 		exit 1
 	else     
         echo "HostName is $HOSTNAME"
@@ -106,23 +110,10 @@ function firewall_config() {
     # 禁用selinux
     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
     setenforce 0
-	
-	sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config
-	
+    sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config	
     # 请根据具体情况来决定是否关闭防火墙
-    if [ $v -eq 6 ];then
-		echo "-------修改Centos 6 防火墙策略-------"
-		/sbin/iptables -F
-		service iptables start
-		chkconfig iptables on
-		#调整默认策略（默认拒绝所有访问，改成允许所有访问）
-		iptables -P INPUT ACCEPT
-		#iptables -P OUTPUT ACCEPT
-		/etc/init.d/sshd  restart
-	fi
-
 	if [ $v -eq 7 ];then
-		echo "-------修改Centos 7 防火墙策略-------"
+		echo -e "\033[31m -------修改Centos 7 防火墙策略------- \033[0m"
 		#systemctl restart firewalld.service
 		#systemctl enable firewalld.service
 		#调整默认策略（默认拒绝所有访问，改成允许所有访问）：
@@ -132,7 +123,7 @@ function firewall_config() {
 		systemctl stop firewalld
 		systemctl disable firewalld
 	fi
-	echo "-------防火墙初始化完成-------"
+	echo -e "\033[31m -------防火墙初始化完成------- \033[0m"
 }
 
 function yum_config() {
@@ -142,20 +133,13 @@ function yum_config() {
     #yum clean all && yum makecache
     #yum -y install iotop iftop net-tools lrzsz gcc gcc-c++ make cmake libxml2-devel openssl-devel curl curl-devel unzip sudo ntp libaio-devel wget vim ncurses-devel autoconf automake zlib-devel  python-devel bash-completion
     
-    MIRROR="http://mirrors.aliyun.com"
     #更换yum源为阿里源
     cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
     sed -i "s/#baseurl/baseurl/g" /etc/yum.repos.d/CentOS-Base.repo
     sed -i "s/mirrorlist=http/#mirrorlist=http/g" /etc/yum.repos.d/CentOS-Base.repo
     sed -i "s@baseurl=.*/centos@baseurl=$MIRROR/centos@g" /etc/yum.repos.d/CentOS-Base.repo
-	yum clean all
+    yum clean all
     yum makecache
-
-    #同步时间
-	timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
-        yum install -y ntpdate
-	ntpdate ntp1.aliyun.com
-	hwclock -w
 
     #配置EPEL源
     #EPEL (Extra Packages for Enterprise Linux) 是由 Fedora Special Interest Group 为企业 Linux 创建、维护和管理的一个高质量附加包集合，适用于但不仅限于 Red Hat Enterprise Linux (RHEL), CentOS, Scientific Linux (SL), Oracle Linux (OL)
@@ -170,13 +154,21 @@ function yum_config() {
     yum makecache
     #yum update -y
 	#初始化安装服务
-	yum install -y vim telnet unzip tcpdump sysstat gcc gdb wget iotop iftop traceroute tomcat-native cronolog lrzsz apr lsof nmap
+    yum install -y vim telnet unzip tcpdump sysstat gcc gdb wget iotop iftop traceroute tomcat-native cronolog lrzsz apr lsof nmap
 	
-	#增加普通用户的软件执行权限
-	chmod u+s /usr/sbin/tcpdump
-	chmod u+s /usr/sbin/iftop
-	
-	echo "-------YUM源和应用服务初始化完成-------"
+    #增加普通用户的软件执行权限
+    chmod u+s /usr/sbin/tcpdump
+    chmod u+s /usr/sbin/iftop
+
+    echo -e "\033[31m -------YUM源和应用服务初始化完成------- \033[0m"
+}
+
+#时间同步
+function ontime() {
+	timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
+        yum install -y ntpdate
+	ntpdate ntp1.aliyun.com
+	hwclock -w
 }
 
 # 内核优化
@@ -194,12 +186,11 @@ function kernel_config() {
 @cloud-user      soft    nofile          300000
 EOF
 
-	cp /etc/security/limits.d/20-nproc.conf /etc/security/limits.d/20-nproc.conf.bak
-	cat > /etc/security/limits.d/20-nproc.conf << EOF
- # Default limit for number of user's processes to prevent
- # accidental fork bombs.
- # See rhbz #432903 for reasoning.
- 
+    cp /etc/security/limits.d/20-nproc.conf /etc/security/limits.d/20-nproc.conf.bak
+    cat > /etc/security/limits.d/20-nproc.conf << EOF
+# Default limit for number of user's processes to prevent
+# accidental fork bombs.
+# See rhbz #432903 for reasoning.
 *          soft    nproc     102400
 root       soft    nproc     unlimited
 EOF
@@ -310,44 +301,24 @@ EOF
     echo "-------JDK、TOMCAT初始化完成-------"
 }
 
-#安装salt-minion 2019-02最新版本
+#安装salt-minion 指定版本版本
 function install_salt_minion() {
-	#服务端域名：salt.haier.net
-	if [ $v -eq 6 ];then
-	    echo "-------执行Centos6 salt安装-------"
-		yum install -y https://repo.saltstack.com/yum/redhat/salt-repo-latest.el6.noarch.rpm
-		sed -i "s/repo.saltstack.com/mirrors.aliyun.com\/saltstack/g" /etc/yum.repos.d/salt-latest.repo
-		yum install -y salt-minion-2019.2.0
-		sed -i 's/^master.*/#&/' /etc/salt/minion
-		sed -i 's/^id.*/#&/' /etc/salt/minion
-		sleep 5
-		cat >> /etc/salt/minion << EOF
+    echo "-------执行Centos7 salt安装-------"
+    yum install -y https://repo.saltstack.com/yum/redhat/salt-repo-latest.el7.noarch.rpm
+    sed -i "s/repo.saltstack.com/mirrors.aliyun.com\/saltstack/g" /etc/yum.repos.d/salt-latest.repo
+    yum install -y salt-minion-$SALT_MINION_VERSION
+    sed -i 's/^master.*/#&/' /etc/salt/minion
+    sed -i 's/^id.*/#&/' /etc/salt/minion
+    cat >> /etc/salt/minion << EOF
 master: $SALT_MASTER
 id: $ipaddr
 EOF
-		chkconfig salt-minion on
-		service salt-minion 
-	fi
-	
-	if [ $v -eq 7 ];then
-		echo "-------执行Centos7 salt安装-------"
-		yum install -y https://repo.saltstack.com/yum/redhat/salt-repo-latest.el7.noarch.rpm
-		sed -i "s/repo.saltstack.com/mirrors.aliyun.com\/saltstack/g" /etc/yum.repos.d/salt-latest.repo
-		yum install -y salt-minion-2019.2.0
-		sed -i 's/^master.*/#&/' /etc/salt/minion
-		sed -i 's/^id.*/#&/' /etc/salt/minion
-		sleep 5
-		cat >> /etc/salt/minion << EOF
-master: $SALT_MASTER
-id: $ipaddr
-EOF
-		systemctl enable salt-minion
-		systemctl restart salt-minion
-	fi
-	echo "-------Saltstack Minion初始化完成-------"
+    systemctl enable salt-minion
+    systemctl restart salt-minion
+    echo "-------Saltstack Minion初始化完成-------"
 }
 
-#关闭图形界面
+#更改主要目录权限
 function dirblong(){
     chown cloud-user.cloud-user /apps
     chown cloud-user.cloud-user /export
@@ -356,20 +327,22 @@ function dirblong(){
 }
 
 #所有的配置
-#    hostname_config
-#    firewall_config
-#    yum_config
-#    kernel_config
-#    dns_config
-#    user_add
-#    close_gui
-#    install_jdk_and_tomcat
-#    install_salt_minion
-
+#    hostname_config 修改主机名
+#    firewall_config 关闭防火墙
+#    yum_config 配置yum源
+#    kernel_config 内核参数修改
+#    dns_config 配置dns服务器
+#    user_add 添加用户
+#    close_gui  关闭图形
+#    install_jdk_and_tomcat  安装jdk环境
+#    install_salt_minion 安装salt-minion
+#    ontime  时间同步
+#    dirblong  更改主要目录权限
 main(){
     user_add
     firewall_config
     yum_config
+    ontime
     kernel_config
     install_jdk_and_tomcat
     install_salt_minion
