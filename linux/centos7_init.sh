@@ -41,7 +41,7 @@ DNS4='192.168.100.2'
 SALT_MASTER='10.159.32.200'
 SALT_MINION_VERSION='2019.2.0'
 #主机名
-HOSTNAME="node-01"
+HOSTNAME="node-05"
 
 #yum源地址
 MIRROR="http://mirrors.aliyun.com"
@@ -334,6 +334,7 @@ function dirblong(){
 #    ontime  时间同步
 #    dirblong  更改主要目录权限
 main(){
+    hostname_config
     user_add
     firewall_config
     yum_config
