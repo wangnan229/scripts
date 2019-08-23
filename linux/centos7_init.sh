@@ -170,10 +170,29 @@ function yum_config() {
 
 #时间同步
 function ontime() {
+        yum install -y ntpdate ntp
 	timedatectl set-local-rtc 1 && timedatectl set-timezone Asia/Shanghai
-        yum install -y ntpdate
 	ntpdate ntp1.aliyun.com
 	hwclock -w
+	
+	cat > /etc/ntp.conf << EOF
+driftfile /var/lib/ntp/drift
+restrict default nomodify notrap nopeer noquery
+restrict 127.0.0.1 
+restrict ::1
+server ntp1.aliyun.com iburst
+server ntp2.aliyun.com iburst
+server ntp3.aliyun.com iburst
+server ntp4.aliyun.com iburst
+server ntp5.aliyun.com iburst
+server ntp6.aliyun.com iburst
+server ntp7.aliyun.com iburst
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
+disable monitor
+EOF
+	systemctl restart ntpd
+	systemctl enable ntpd
 }
 
 # 内核优化
