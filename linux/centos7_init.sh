@@ -22,7 +22,7 @@ cat << EOF
 EOF
 
 echo -e "\033[31m 这个是Centos7系统初始化脚本，请慎重运行！ press ctrl+C to cancel \033[0m"
-
+sleep 3
 ##############从此处开始需要编辑###########
 
 #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
@@ -99,11 +99,11 @@ function hostname_config() {
 		echo -e "\033[31m The host name is empty!!! \033[0m"
 		exit 1
 	else     
-        echo "HostName is $HOSTNAME"
+        echo -e "\033[32m HostName is $HOSTNAME \033[0m"
         hostnamectl set-hostname $HOSTNAME
 	fi
-	sleep 3
-	echo "-------计算机名修改完成-------"
+	echo -e "\033[32m -------计算机名修改完成-------  \033[0m"
+	sleep 1
 }
 
 function firewall_config() {
@@ -120,7 +120,7 @@ function firewall_config() {
     #firewall-cmd --reload
     systemctl stop firewalld
     systemctl disable firewalld
-	echo -e "\033[31m -------防火墙初始化完成------- \033[0m"
+    echo -e "\033[31m -------防火墙初始化完成------- \033[0m"
 }
 
 function yum_config() {
@@ -172,7 +172,7 @@ function ontime() {
 function kernel_config() {
 	#文件句柄数优化
     cp /etc/security/limits.conf /etc/security/limits.conf.bak
-	cat >> /etc/security/limits.conf << EOF
+    cat >> /etc/security/limits.conf << EOF
 *           soft   nofile       102400
 *           hard   nofile       102400
 @cloud-user      hard    core            0
@@ -217,7 +217,7 @@ net.ipv4.tcp_syncookies = 1
 net.nf_conntrack_max = 655350
 EOF
 /sbin/sysctl -p
-    echo "\033[32m -------limit、sysctl初始化完成-------  \033[0m"
+    echo -e "\033[32m -------limit、sysctl初始化完成-------  \033[0m"
 }
 
 function user_add() {
@@ -226,15 +226,15 @@ function user_add() {
 	PASS="rOXFJZhiaACE"
 	id $NEWUSER
 	if [ $? -eq 0 ] ; then
-		echo "$NEWUSER账户已存在，无法创建!"
+		echo -e "\033[31m $NEWUSER账户已存在，无法创建! \033[0m"
 	else
 		useradd $NEWUSER
 		echo $PASS | passwd --stdin $NEWUSER
 		if [ $? -eq 0 ] ; then
-			echo "$NEWUSER账户创建成功！"
+			echo -e "\033[32m $NEWUSER账户创建成功！ \033[0m"
 			sed -i "/^root/a$NEWUSER\tALL=(ALL)\tNOPASSWD: ALL" /etc/sudoers
 		else
-			echo "$NEWUSER账户创建失败！"
+			echo -e "\033[32m $NEWUSER账户创建失败！\033[0m"
 		fi
 	fi
 	
@@ -242,18 +242,18 @@ function user_add() {
 	PASS2="clouduser!@#"
 	id $NEWUSER2
 	if [ $? -eq 0 ] ; then
-		echo "$NEWUSER2账户已存在，无法创建!"
+		echo -e "\033[31m $NEWUSER2账户已存在，无法创建! \033[0m"
 	else
 		useradd $NEWUSER2
 		echo $PASS2 | passwd --stdin $NEWUSER2
 		if [ $? -eq 0 ] ; then
-			echo "$NEWUSER2账户创建成功！"
+			echo -e "\033[32m $NEWUSER2账户创建成功！ \033[0m"
 		else
-			echo "$NEWUSER账户创建失败！"
+			echo -e "\033[31m $NEWUSER账户创建失败！\033[0m"
 		fi
 	fi
 
-	echo "-------系统用户、目录初始化完成-------"
+	echo -e "\033[32m -------系统用户、目录初始化完成-------  \033[0m"
 }
 
 #关闭图形界面
@@ -269,7 +269,7 @@ nameserver $DNS2
 nameserver $DNS3
 nameserver $DNS4
 EOF
-	echo "dns初始化配置完成"
+	echo -e "\033[32m dns初始化配置完成  \033[0m"
 }
 
 #安装jdk和tomcat
@@ -286,14 +286,14 @@ function install_jdk_and_tomcat() {
     tar -xf /apps/jdk1.8.tar.gz -C /apps/
     chown -hR cloud-user:cloud-user /apps/jdk1.7.0_60
     chown -hR cloud-user:cloud-user /apps/jdk1.8
-			cat >> /etc/profile << EOF
+    cat >> /etc/profile << EOF
 export JAVA_HOME=/apps/jdk1.7.0_60
 export PATH=\$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
     source /etc/profile
     rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
-    echo "-------JDK、TOMCAT初始化完成-------"
+    echo -e "\033[32m -------JDK、TOMCAT初始化完成-------  \033[0m"
 }
 
 #安装salt-minion 指定版本版本
@@ -310,7 +310,7 @@ id: $ipaddr
 EOF
     systemctl enable salt-minion
     systemctl restart salt-minion
-    echo "-------Saltstack Minion初始化完成-------"
+    echo -e "\033[32m -------Saltstack Minion初始化完成------- \033[0m"
 }
 
 #更改主要目录权限
