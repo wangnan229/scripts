@@ -193,6 +193,7 @@ disable monitor
 EOF
 	systemctl restart ntpd
 	systemctl enable ntpd
+	echo -e "\033[32m 时间同步成功 \033[0m"
 }
 
 # 内核优化
