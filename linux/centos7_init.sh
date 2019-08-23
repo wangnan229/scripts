@@ -285,7 +285,7 @@ EOF
 function install_jdk() {
     rpm -qa | grep openjdk | xargs yum remove -y
     #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
-    cd /apps
+    cd $JDK_PATH
     wget -O $JDK_PATH/jdk1.7.tar.gz $JDK7_URL
     wget -O $JDK_PATH/jdk1.8.tar.gz $JDK8_URL
     
@@ -373,5 +373,4 @@ cat << EOF
  |                === System init Finished ===                  |  
  +--------------------------------------------------------------+  
 EOF
-sleep 3
 echo "Please reboot your system!"
