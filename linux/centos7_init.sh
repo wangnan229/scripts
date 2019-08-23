@@ -131,6 +131,7 @@ function firewall_config() {
     echo -e "\033[31m -------防火墙初始化完成------- \033[0m"
 }
 
+#yum源指定为阿里，安装常用工具
 function yum_config() {
     #cd /etc/yum.repos.d/ && mkdir bak && mv -f *.repo bak/
     #wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
@@ -248,8 +249,9 @@ EOF
     echo -e "\033[32m -------limit、sysctl初始化完成-------  \033[0m"
 }
 
+#添加用户，默认添加uplus和cloud-user
 function user_add() {
-	#创建haieradmin，并允许其用sudo命令时不需要输入密码
+	#创建uplus，并允许其用sudo命令时不需要输入密码
         NEWUSER="uplus"
 	PASS="rOXFJZhiaACE"
 	id $NEWUSER
@@ -300,7 +302,7 @@ EOF
 	echo -e "\033[32m dns初始化配置完成  \033[0m"
 }
 
-#安装jdk和tomcat
+#安装jdk
 function install_jdk() {
     rpm -qa | grep openjdk | xargs yum remove -y
     #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
