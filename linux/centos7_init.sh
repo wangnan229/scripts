@@ -26,8 +26,8 @@ sleep 3
 ##############从此处开始需要编辑###########
 
 #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
-JDK7_PATH='http://39.106.253.153/ziyuan/file/jenkins/jdk1.7.tar.gz'
-JDK8_PATH='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
+JDK7_URL='http://39.106.253.153/ziyuan/file/jenkins/jdk1.7.tar.gz'
+JDK8_URL='https://resource.haier.net/download/init/java/jdk1.8.tar.gz'
 
 #DNS设置
 DNS1="10.159.32.205"
@@ -45,6 +45,13 @@ HOSTNAME="node-05"
 
 #yum源地址
 MIRROR="http://mirrors.aliyun.com"
+
+#默认安装jdk的路径注意后面不要加斜杠
+JDK_PATH='/opt'
+
+#需要判断是否存在的两个路径，如果不存在脚本退出
+PATH1='/apps'
+PATH2='/export'
 
 
 ##############从此处开始停止编辑###########
@@ -68,15 +75,6 @@ fi
 #休息一下
 sleep 1
 
-#判断是否存在/apps和/export目录，没有的话退出
-if [[ -d /apps && -d /export ]]
-then
-	echo -e "\033[32m OK /apps and /export is fine \033[0m"
-else
-	echo -e '\033[31m Sorry. you do not have a /apps and /export directory \033[0m'
-	exit 1
-fi
-
 #获取本机ip地址
 ipaddr=`ifconfig |grep team0 -A 1|grep inet|awk '{print $2}'`
   if [ "$ipaddr" =  "" ]
@@ -92,7 +90,7 @@ echo -e "\033[32m 服务器IP地址：$ipaddr \033[0m"
 #休息一下
 sleep 1
 
-#
+#设置主机名
 function hostname_config() {
 	#hostnamectl set-hostname aaa
 	if [ "$HOSTNAME" == "" ];then
@@ -106,6 +104,17 @@ function hostname_config() {
 	sleep 1
 }
 
+#判断目录是否存在
+function dir_exist() {
+    #判断是否存在/apps和/export目录，没有的话退出
+    if [[ -d $PATH1 && -d $PATH1 ]]
+    then
+    	echo -e "\033[32m OK $PATH1 and $PATH2 is fine \033[0m"
+    else
+    	echo -e "\033[31m Sorry. you do not have a $PATH1 and $PATH2 directory \033[0m"
+    	exit 1
+    fi
+}
 function firewall_config() {
     # 禁用selinux
     sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
@@ -273,26 +282,25 @@ EOF
 }
 
 #安装jdk和tomcat
-function install_jdk_and_tomcat() {
+function install_jdk() {
     rpm -qa | grep openjdk | xargs yum remove -y
     #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
     cd /apps
-    wget -O /apps/jdk1.7.tar.gz $JDK7_PATH
-    wget -O /apps/jdk1.8.tar.gz $JDK8_PATH
-    #wget https://resource.haier.net/download/java/tomcat8.5.tar.gz
-    #curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat.sh | bash /dev/stdin 750"
-    #curl @jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh">ftp://ftpuser:RwtgwZPj@jenkins-res.uhome.haier.net:60021/ops/deploy_tomcat8.sh | bash /dev/stdin 750"
-    tar -xf /apps/jdk1.7.tar.gz -C /apps/
-    tar -xf /apps/jdk1.8.tar.gz -C /apps/
-    chown -hR cloud-user:cloud-user /apps/jdk1.7.0_60
-    chown -hR cloud-user:cloud-user /apps/jdk1.8
+    wget -O $JDK_PATH/jdk1.7.tar.gz $JDK7_URL
+    wget -O $JDK_PATH/jdk1.8.tar.gz $JDK8_URL
+    
+    tar -xf $JDK_PATH/jdk1.7.tar.gz -C $JDK_PATH
+    tar -xf $JDK_PATH/jdk1.8.tar.gz -C $JDK_PATH
+    
+    chown -hR cloud-user:cloud-user $JDK_PATH/jdk1.7.0_60
+    chown -hR cloud-user:cloud-user $JDK_PATH/jdk1.8
     cat >> /etc/profile << EOF
-export JAVA_HOME=/apps/jdk1.7.0_60
+export JAVA_HOME=$JDK_PATH/jdk1.7.0_60
 export PATH=\$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
     source /etc/profile
-    rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
+    rm -f $JDK_PATH/jdk1.7.tar.gz $JDK_PATH/jdk1.8.tar.gz
     echo -e "\033[32m -------JDK、TOMCAT初始化完成-------  \033[0m"
 }
 
@@ -321,29 +329,42 @@ function dirblong(){
     chmod 777 /export
 }
 
-#所有的配置
-#    hostname_config 修改主机名
-#    firewall_config 关闭防火墙
-#    yum_config 配置yum源
-#    kernel_config 内核参数修改
-#    dns_config 配置dns服务器
-#    user_add 添加用户
-#    close_gui  关闭图形
-#    install_jdk_and_tomcat  安装jdk环境
-#    install_salt_minion 安装salt-minion
-#    ontime  时间同步
-#    dirblong  更改主要目录权限
 main(){
+    #dir_exist  判断目录是否存在
+    #dir_exist
+    
+    #    hostname_config 修改主机名
     hostname_config
+    
+    #    user_add 添加用户
     user_add
+    
+    #    firewall_config 关闭防火墙
     firewall_config
+    
+    #    yum_config 配置yum源
     yum_config
+    
+    #    ontime  时间同步
     ontime
+    
+    #    kernel_config 内核参数修改
     kernel_config
-    install_jdk_and_tomcat
+    
+    #    install_jdk  安装jdk环境
+    install_jdk
+    
+    #    install_salt_minion 安装salt-minion
     install_salt_minion
-    dirblong
-    dns_config
+    
+    #    dirblong  更改主要目录权限
+    #dirblong
+    
+    #    dns_config 配置dns服务器
+    #dns_config
+    
+    #    close_gui  关闭图形
+    #close_gui
 }
 main
 
