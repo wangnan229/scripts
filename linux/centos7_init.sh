@@ -112,17 +112,14 @@ function firewall_config() {
     setenforce 0
     sed -i 's/#UseDNS yes/UseDNS no/g' /etc/ssh/sshd_config	
     # 请根据具体情况来决定是否关闭防火墙
-	if [ $v -eq 7 ];then
-		echo -e "\033[31m -------修改Centos 7 防火墙策略------- \033[0m"
-		#systemctl restart firewalld.service
-		#systemctl enable firewalld.service
-		#调整默认策略（默认拒绝所有访问，改成允许所有访问）：
-		#firewall-cmd --permanent --zone=public --set-target=ACCEPT
-		#firewall-cmd --reload
-		#systemctl restart sshd
-		systemctl stop firewalld
-		systemctl disable firewalld
-	fi
+    echo -e "\033[31m -------修改Centos 7 防火墙策略------- \033[0m"
+    #systemctl restart firewalld.service
+    #systemctl enable firewalld.service
+    #调整默认策略（默认拒绝所有访问，改成允许所有访问）：
+    #firewall-cmd --permanent --zone=public --set-target=ACCEPT
+    #firewall-cmd --reload
+    systemctl stop firewalld
+    systemctl disable firewalld
 	echo -e "\033[31m -------防火墙初始化完成------- \033[0m"
 }
 
@@ -153,7 +150,7 @@ function yum_config() {
 
     yum makecache
     #yum update -y
-	#初始化安装服务
+    #初始化安装服务
     yum install -y vim telnet unzip tcpdump sysstat gcc gdb wget iotop iftop traceroute tomcat-native cronolog lrzsz apr lsof nmap
 	
     #增加普通用户的软件执行权限
@@ -195,9 +192,9 @@ EOF
 root       soft    nproc     unlimited
 EOF
 
-	#内核参数优化
-	cp /etc/sysctl.conf /etc/sysctl.conf.bak
-	cat >> /etc/sysctl.conf << EOF
+    #内核参数优化
+    cp /etc/sysctl.conf /etc/sysctl.conf.bak
+    cat >> /etc/sysctl.conf << EOF
 # U+ General Optimize Configuration
 fs.file-max = 3260334
 vm.swappiness=0
@@ -220,7 +217,7 @@ net.ipv4.tcp_syncookies = 1
 net.nf_conntrack_max = 655350
 EOF
 /sbin/sysctl -p
-    echo "-------limit、sysctl初始化完成-------"
+    echo "\033[32m -------limit、sysctl初始化完成-------  \033[0m"
 }
 
 function user_add() {
@@ -278,8 +275,7 @@ EOF
 #安装jdk和tomcat
 function install_jdk_and_tomcat() {
     rpm -qa | grep openjdk | xargs yum remove -y
-	#统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
-
+    #统一使用生产资源服务器下的jdk和tomcat，默认初始化jdk1.7.0_60，jdk使用的jdk1.8.0_172
     cd /apps
     wget -O /apps/jdk1.7.tar.gz $JDK7_PATH
     wget -O /apps/jdk1.8.tar.gz $JDK8_PATH
@@ -295,7 +291,6 @@ export JAVA_HOME=/apps/jdk1.7.0_60
 export PATH=\$JAVA_HOME/bin:\$PATH
 export CLASSPATH=.:\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar
 EOF
-
     source /etc/profile
     rm -f /apps/jdk1.7.tar.gz /apps/jdk1.8.tar.gz
     echo "-------JDK、TOMCAT初始化完成-------"
