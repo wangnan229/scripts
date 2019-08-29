@@ -350,6 +350,29 @@ function dirblong(){
     chmod 777 /export
 }
 
+#安装Python3环境
+function install_python3() {
+	#安装依赖
+        yum -y install wget libselinux-python sqlite-devel xz gcc automake zlib-devel openssl-devel epel-release git
+        #编译安装python3.6.4
+	cd /usr/local/src/
+	wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tar.xz
+	tar xf Python-3.6.4.tar.xz
+	cd Python-3.6.4
+	./configure && make && make install
+	#建立Python环境,因为CentOS 6/7自带的是Python2,而Yum等工具依赖原来的Python,为了不扰乱原来的环境我们来使用Python3虚拟环境
+	#cat >> /etc/profile << EOF
+#PATH = \$PATH:/usr/local/src/Python-3.6.4/python
+#EOF
+	#替换原来python环境，会影响到yum等安装依赖
+	#ln -sv /usr/local/bin/python3 /usr/bin/python
+	
+	#不替换Python默认环境，使用python3服务
+	ln -sv /usr/local/bin/python3 /usr/bin/python3
+	
+	echo "-------Python3.6初始化安装完成-------"
+}
+
 main(){
     #dir_exist  判断目录是否存在
     #dir_exist
@@ -386,6 +409,9 @@ main(){
     
     #    close_gui  关闭图形
     #close_gui
+    
+    #install_python3 安装python3
+    #install_python3 
 }
 main
 
