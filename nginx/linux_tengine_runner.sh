@@ -8,7 +8,7 @@ export_or_prefix() {
 
 before_install() {
 	yum install luarocks -y
-	yum install openssl-devel pcre-devel zlib-devel luarocks git -y
+	yum install openssl-devel pcre-devel zlib-devel luarocks git gcc gcc-c++ -y
     #sudo cpanm --notest Test::Nginx >build.log 2>&1 || (cat build.log && exit 1)
 }
 
@@ -100,9 +100,9 @@ tengine_install() {
         --add-dynamic-module=bundle/tengine-2.3.2/modules/ngx_slab_stat \
         > build.log 2>&1 || (cat build.log && exit 1)
 
-    make > build.log 2>&1 || (cat build.log && exit 1)
+    gmake > build.log 2>&1 || (cat build.log && exit 1)
 
-    sudo PATH=$PATH make install > build.log 2>&1 || (cat build.log && exit 1)
+    sudo PATH=$PATH gmake install > build.log 2>&1 || (cat build.log && exit 1)
 
     cd ..
 
@@ -111,10 +111,26 @@ tengine_install() {
     ls build-cache${OPENRESTY_PREFIX}
     rm -rf openresty-1.15.8.2
 }
-
+after_install() {
+	#add runner user
+	groupadd nginx
+	useradd nginx -g nginx -s /sbin/nologin -M
+	#logrotete
+	wget -O /etc/logrotate.d/nginx http://39.106.253.153/ziyuan/file/prom/nginx
+	#log dir
+	mkdir /export/nginxlog
+	chown nginx.nginx /export/nginxlog
+	#
+	ln -s ${OPENRESTY_PREFIX}/nginx/sbin/nginx /usr/bin/nginx
+	
+	#update conf
+	rm -f ${OPENRESTY_PREFIX}/nginx/conf/nginx.conf
+	wget -O ${OPENRESTY_PREFIX}/nginx/conf/nginx.conf http://39.106.253.153/ziyuan/file/prom/nginx.conf
+	mkdir ${OPENRESTY_PREFIX}/nginx/conf/{vhost,sslkey}
+}
 
 export_or_prefix
 before_install
 tengine_install
-
+after_install
 
