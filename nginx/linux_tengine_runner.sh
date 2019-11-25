@@ -3,7 +3,7 @@
 set -ex
 
 export_or_prefix() {
-    export OPENRESTY_PREFIX="/usr/local/openresty-debug"
+    export OPENRESTY_PREFIX="/usr/local/openresty"
 }
 
 before_install() {
