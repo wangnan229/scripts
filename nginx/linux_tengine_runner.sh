@@ -125,7 +125,7 @@ after_install() {
 	
 	#update conf
 	rm -f ${OPENRESTY_PREFIX}/nginx/conf/nginx.conf
-	wget -O ${OPENRESTY_PREFIX}/nginx/conf/nginx.conf http://39.106.253.153/ziyuan/file/prom/nginx.conf
+	wget -O ${OPENRESTY_PREFIX}/nginx/conf/nginx.conf http://39.106.253.153/ziyuan/file/prom/nginx_openresty.conf
 	mkdir ${OPENRESTY_PREFIX}/nginx/conf/{vhost,sslkey}
 }
 
