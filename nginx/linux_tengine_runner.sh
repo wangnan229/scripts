@@ -8,7 +8,7 @@ export_or_prefix() {
 
 before_install() {
 	yum install luarocks -y
-	yum install openssl-devel pcre-devel zlib-devel luarocks -y
+	yum install openssl-devel pcre-devel zlib-devel luarocks git -y
     #sudo cpanm --notest Test::Nginx >build.log 2>&1 || (cat build.log && exit 1)
 }
 
@@ -21,7 +21,9 @@ tengine_install() {
         ls -l ${OPENRESTY_PREFIX}/bin
         return
     fi
-
+    
+    git clone git://github.com/vozlt/nginx-module-vts.git
+    
     wget https://openresty.org/download/openresty-1.15.8.2.tar.gz
     tar zxf openresty-1.15.8.2.tar.gz
 
@@ -81,6 +83,7 @@ tengine_install() {
         --add-module=bundle/tengine-2.3.2/modules/mod_dubbo \
         --add-module=bundle/tengine-2.3.2/modules/ngx_multi_upstream_module \
         --add-module=bundle/tengine-2.3.2/modules/mod_config \
+	--add-module=../nginx-module-vts \
         --add-dynamic-module=bundle/tengine-2.3.2/modules/ngx_http_concat_module \
         --add-dynamic-module=bundle/tengine-2.3.2/modules/ngx_http_footer_filter_module \
         --add-dynamic-module=bundle/tengine-2.3.2/modules/ngx_http_proxy_connect_module \
@@ -108,3 +111,10 @@ tengine_install() {
     ls build-cache${OPENRESTY_PREFIX}
     rm -rf openresty-1.15.8.2
 }
+
+
+export_or_prefix
+before_install
+tengine_install
+
+
